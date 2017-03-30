@@ -1,9 +1,9 @@
 module Api::V1
   class CustomersController < ApplicationController
     before_action :set_customer, only: [:show, :update, :destroy]
-    
+
     def index
-      render json: Customer.all
+      render json: Customer.all, include: ['purchase']
     end
 
     def show

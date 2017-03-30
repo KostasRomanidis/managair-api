@@ -1,4 +1,7 @@
 class Product < ApplicationRecord
+  has_many :purchases
+  has_many :customers, through: :purchases
+
   validates_presence_of :brand
   validates_presence_of :model
   validates_presence_of :cost
