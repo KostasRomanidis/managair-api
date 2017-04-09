@@ -2,11 +2,13 @@ require 'rails_helper'
 
 RSpec.describe 'Products API', type: :request do
   #Initialize data
+  let(:user) { create(:user) }
   let!(:customers) { create_list(:customer, 10) }
   let(:customer_id) {customers.first.id}
+  let(:headers) { valid_headers }
 
   describe 'GET /v1/customers' do
-    before { get '/v1/customers' }
+    before { get '/v1/customers', headers: headers}
 
     it 'returns customers' do
       expect(json).not_to be_empty
@@ -19,7 +21,7 @@ RSpec.describe 'Products API', type: :request do
   end
 
   describe 'GET /v1/customers/:id' do
-    before { get "/v1/customers/#{customer_id}" }
+    before { get "/v1/customers/#{customer_id}", headers: headers }
 
     context 'when the record exists' do
       it 'returns the customer' do
@@ -51,7 +53,7 @@ RSpec.describe 'Products API', type: :request do
     let(:valid_attributes) { { name: 'Anakin Skywalker', phone: '2310438889', address: 'Tatoine 26 str', customer_type: 'Company'} }
 
     context 'when request is valid' do
-      before { post '/v1/customers', params: valid_attributes }
+      before { post '/v1/customers', params: valid_attributes, headers: headers}
 
       it 'creates a customer' do
         expect(json['data']['attributes']['name']).to eq('Anakin Skywalker')
@@ -63,7 +65,7 @@ RSpec.describe 'Products API', type: :request do
     end
 
     context 'when request is invalid' do
-      before { post '/v1/customers', params: { name: 'Anakin Skywalker', address: 'Tatoine 26 str', customer_type: 'Organization'}}
+      before { post '/v1/customers', params: { name: 'Anakin Skywalker', address: 'Tatoine 26 str', customer_type: 'Organization'}, headers: headers}
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -79,14 +81,14 @@ RSpec.describe 'Products API', type: :request do
     let(:valid_attributes) {{name: 'Luke Skywalker'}}
 
     context 'when the customer exists' do
-      before { put "/v1/customers/#{customer_id}", params: valid_attributes }
+      before { put "/v1/customers/#{customer_id}", params: valid_attributes, headers: headers }
 
       it 'updates the record' do
         expect(response.body).to be_empty
       end
 
       it 'updates the attribute of customer' do
-        get "/v1/customers/#{customer_id}"
+        get "/v1/customers/#{customer_id}", headers: headers
         expect(json['data']['attributes']['name']).to eq('Luke Skywalker')
       end
 
@@ -97,14 +99,14 @@ RSpec.describe 'Products API', type: :request do
   end
 
   describe 'DELETE /v1/customers/:id' do
-    before { delete "/v1/customers/#{customer_id}" }
+    before { delete "/v1/customers/#{customer_id}", headers: headers}
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
     end
 
     it 'returns -1 customers' do
-      get '/v1/customers'
+      get '/v1/customers', headers: headers
       expect(json['data'].size).to eq(9)
     end
   end
