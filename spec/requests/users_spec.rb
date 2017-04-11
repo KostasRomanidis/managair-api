@@ -7,9 +7,9 @@ RSpec.describe 'Users API', type: :request do
     attributes_for(:user, password_confirmation: user.password)
   end
 
-  describe 'POST /v1/signup' do
+  describe 'POST /signup' do
     context 'when the request is valid' do
-      before { post '/v1/signup', params: valid_attributes, headers: headers }
+      before { post '/signup', params: valid_attributes, headers: headers }
 
       it 'creates a new user' do
         expect(response).to have_http_status(201)
@@ -27,7 +27,7 @@ RSpec.describe 'Users API', type: :request do
     end
 
     context 'when request is invalid' do
-      before { post '/v1/signup', params: {}, headers: headers}
+      before { post '/signup', params: {}, headers: headers}
 
       it 'does not create a new user' do
         logger.warn(response.pretty_inspect)
