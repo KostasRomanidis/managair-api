@@ -1,9 +1,10 @@
 module Api::V1
   class CustomersController < ApplicationController
+    before_action :set_organization
     before_action :set_customer, only: [:show, :update, :destroy]
 
     def index
-      render json: Customer.all, include: ['purchase']
+      render json: @organization.customers, include: ['purchase']
     end
 
     def show
@@ -11,7 +12,7 @@ module Api::V1
     end
 
     def create
-      @customer = Customer.create!(customer_params)
+      @customer = @organization.customers.create!(customer_params)
       render json: @customer, status: :created
     end
 
@@ -27,11 +28,15 @@ module Api::V1
 
     private
     def customer_params
-      params.permit(:name, :phone, :address, :customer_type)
+      params.permit(:name, :phone, :address, :customer_type, :organization_id)
+    end
+
+    def set_organization
+      @organization = Organization.find(params[:organization_id])
     end
 
     def set_customer
-      @customer = Customer.find(params[:id])
+      @customer = @organization.customers.find_by!(id: params[:id]) if @organization
     end
   end
 end

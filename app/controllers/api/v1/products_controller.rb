@@ -1,9 +1,10 @@
 module Api::V1
   class ProductsController < ApplicationController
+    before_action :set_organization
     before_action :set_product, only: [:show, :update, :destroy]
 
     def index
-      render json: Product.all
+      render json: @organization.products
     end
 
     def show
@@ -11,7 +12,7 @@ module Api::V1
     end
 
     def create
-      @product = Product.create!(product_params)
+      @product = @organization.products.create!(product_params)
       render json: @product, status: :created
     end
 
@@ -30,8 +31,12 @@ module Api::V1
       params.permit(:brand, :model, :cost, :btu)
     end
 
+    def set_organization
+      @organization = Organization.find(params[:organization_id])
+    end
+
     def set_product
-      @product = Product.find(params[:id])
+      @product = @organization.products.find_by!(id: params[:id])
     end
   end
 end
