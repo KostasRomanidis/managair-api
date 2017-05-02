@@ -55,13 +55,13 @@ RSpec.describe 'Purchases API', type: :request do
   end
 
   describe 'POST /v1/organizations/organization_id/customers/:customer_id/purchases' do
-    let(:valid_attributes) { { purchase_date: '2017-03-29 10:01:04.537419', customer_id: :customer_id, product_id: 1}}
+    let(:valid_attributes) { { purchase_date: '2017-03-29 10:01:04.537419', customer_id: customer_id, product_id: 1}}
 
     context 'when request is valid' do
       before { post "/v1/organizations/#{organization_id}/customers/#{customer_id}/purchases", params: valid_attributes, headers: headers }
 
       it 'creates a new purchase' do
-        expect(json['data']['attributes']['customer-id']).to eq(customer_id)
+        expect(json['data']['relationships']['customer']['data']['id']).to eq(customer_id.to_s)
       end
 
       it 'returns status code 201' do
@@ -70,7 +70,7 @@ RSpec.describe 'Purchases API', type: :request do
     end
 
     context 'when request is invalid' do
-      before { post "/v1/organizations/#{organization_id}/customers/#{customer_id}/purchases", params: { customer_id: :customer_id, product_id: 1}, headers: headers }
+      before { post "/v1/organizations/#{organization_id}/customers/#{customer_id}/purchases", params: { customer_id: customer_id, product_id: 1}, headers: headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -94,7 +94,7 @@ RSpec.describe 'Purchases API', type: :request do
 
       it 'updates the attribute of the purchases' do
         get "/v1/organizations/#{organization_id}/customers/#{customer_id}/purchases/#{purchase_id}", headers: headers
-        expect(json['data']['attributes']['product-id']).to eq(product_2_id)
+        expect(json['data']['relationships']['product']['data']['id']).to eq(product_2_id.to_s)
       end
 
       it 'returns status code 204' do
