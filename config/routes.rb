@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   scope module: 'api' do
     namespace :v1, constraints: ApiConstraint.new(version: 1) do
       resources :organizations do
+        member do
+          post 'add_user'
+        end
         resources :products, :customers do
           resources :purchases
         end

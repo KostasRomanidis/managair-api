@@ -63,6 +63,11 @@ RSpec.describe 'Organizations API', type: :request do
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
       end
+
+      it 'creates a user_organization record' do
+        get '/v1/organizations', headers: headers 
+        expect(json['data'].size).to eq(1)
+      end
     end
 
     context 'when the request is invalid' do
