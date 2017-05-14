@@ -23,6 +23,7 @@ RSpec.describe 'Authentication', type: :request do
       before { post '/auth/login', params: valid_credentials, headers: headers }
 
       it 'returns an authentication token' do
+        logger.warn(json['auth_token'].pretty_inspect)
         expect(json['auth_token']).not_to be_nil
       end
     end
@@ -32,8 +33,12 @@ RSpec.describe 'Authentication', type: :request do
       before { post '/auth/login', params: invalid_credentials, headers: headers }
 
       it 'returns a failure message' do
-        logger.warn(response.pretty_inspect)
         expect(json['message']).to match(/Invalid Credentials/)
+        logger.warn(json.pretty_inspect)
+      end
+
+      it 'returns a status code 401' do
+        expect(response).to have_http_status(401)
       end
     end
   end

@@ -10,15 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170408112858) do
+ActiveRecord::Schema.define(version: 20170502204939) do
 
   create_table "customers", force: :cascade do |t|
     t.string   "name"
     t.string   "phone"
     t.string   "customer_type"
     t.string   "address"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "organization_id"
+    t.index ["organization_id"], name: "index_customers_on_organization_id"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "products", force: :cascade do |t|
@@ -26,18 +34,32 @@ ActiveRecord::Schema.define(version: 20170408112858) do
     t.string   "model"
     t.integer  "btu"
     t.integer  "cost"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "organization_id"
+    t.index ["organization_id"], name: "index_products_on_organization_id"
   end
 
   create_table "purchases", force: :cascade do |t|
     t.datetime "purchase_date"
     t.integer  "customer_id"
     t.integer  "product_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "organization_id"
     t.index ["customer_id"], name: "index_purchases_on_customer_id"
+    t.index ["organization_id"], name: "index_purchases_on_organization_id"
     t.index ["product_id"], name: "index_purchases_on_product_id"
+  end
+
+  create_table "user_organizations", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "organization_id"
+    t.string   "role"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["organization_id"], name: "index_user_organizations_on_organization_id"
+    t.index ["user_id"], name: "index_user_organizations_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

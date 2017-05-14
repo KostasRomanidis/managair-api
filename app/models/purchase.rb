@@ -1,4 +1,5 @@
 class Purchase < ApplicationRecord
+  belongs_to :organization
   belongs_to :customer
   belongs_to :product
 

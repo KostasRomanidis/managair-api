@@ -1,5 +1,6 @@
 module Api::V1
   class PurchasesController < ApplicationController
+    before_action :set_organization
     before_action :set_customer, only: [:index, :create, :show, :destroy, :update]
 
     def index
@@ -30,11 +31,15 @@ module Api::V1
 
     private
     def purchase_params
-      params.permit(:purchase_date, :customer_id, :product_id)
+      params.permit(:purchase_date, :customer_id, :product_id, :organization_id)
+    end
+
+    def set_organization
+      @organization = Organization.find(params[:organization_id])
     end
 
     def set_customer
-      @customer = Customer.find(params[:customer_id])
+      @customer = @organization.customers.find_by!(params[:customer_id]) if @organization
     end
   end
 end
