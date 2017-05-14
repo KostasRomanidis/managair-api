@@ -30,6 +30,7 @@ module Api::V1
      logger.debug @organization.id
      @user_organization = UserOrganization.new(user_id: @user.id, organization_id: @organization.id, role: 'Member')
      @user_organization.save
+     render json: "#{Message.user_added_to_group}", status: :created
    end
 
    private

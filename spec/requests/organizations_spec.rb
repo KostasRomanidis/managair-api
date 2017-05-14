@@ -2,7 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'Organizations API', type: :request do
   let(:user) { create(:user) }
+  let(:user_2) { create(:user) }
   let!(:organization) { create(:organization) }
+  let!(:user_organization) { create(:user_organization, user_id: user.id, organization_id: organization.id, role: 'Admin')}
   let(:headers) { valid_headers }
   let(:organization_id) { organization.id }
 
@@ -65,8 +67,8 @@ RSpec.describe 'Organizations API', type: :request do
       end
 
       it 'creates a user_organization record' do
-        get '/v1/organizations', headers: headers 
-        expect(json['data'].size).to eq(1)
+        get '/v1/organizations', headers: headers
+        expect(json['data'].size).to eq(2)
       end
     end
 
@@ -79,6 +81,35 @@ RSpec.describe 'Organizations API', type: :request do
 
       it 'returns a validation failure message' do
         expect(response.body).to match(/Validation failed: Name can't be blank/)
+      end
+    end
+  end
+
+  describe 'POST /v1/organzations/:id/add_user' do
+    let(:valid_payload) { {email: user_2.email } }
+    let(:invalid_payload) { { email: 'notavailable@user.com'} }
+
+    context 'when the user exists' do
+      before { post "/v1/organizations/#{organization_id}/add_user", params: valid_payload, headers: headers }
+
+      it 'returns status code 201' do
+        expect(response).to have_http_status(201)
+      end
+
+      it 'it adds user to the organizations' do
+        expect(response.body).to match(/User successfully added to group./)
+      end
+    end
+
+    context 'when the user does not exist' do
+      before { post "/v1/organizations/#{organization_id}/add_user", params: invalid_payload, headers: headers }
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status(404)
+      end
+
+      it 'returns a failure message' do
+        expect(response.body).to match(/Sorry, User not found./)
       end
     end
   end
