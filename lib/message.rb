@@ -38,4 +38,8 @@ class Message
   def self.user_added_to_group
     'User successfully added to group.'
   end
+
+  def self.authorized
+    'successfully logged in Managair'
+  end
 end
